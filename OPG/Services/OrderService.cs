@@ -8,8 +8,6 @@ using System.Threading.Tasks;
 
 namespace OPG.Services
 {
-
-
     public class OrderService : IOrderService
     {
         private OPGDbContext OPGDbContext { get; set; }
@@ -37,7 +35,11 @@ namespace OPG.Services
             return resultString;
         }
 
-        public async Task<Order> AddOrder(Order order)
+        public void AddOrderTask(Order order)
+        {
+            Task.Run(() => AddOrder(order));
+        }
+        private async Task<Order> AddOrder(Order order)
         {
             for (int i = 0; i < 5; i++)
             {
@@ -47,28 +49,23 @@ namespace OPG.Services
             order.BoxHeight = CalculateBoxHeight(order.Items);
             order.BoxWidth = CalculateBoxWidth(order.Items);
             order.BoxLength = CalculateBoxLength(order.Items);
-           
+
             await OPGDbContext.Orders.AddAsync(order);
             await OPGDbContext.SaveChangesAsync();
             return order;
         }
 
-        public void AddOrderTask(Order order)
-        {
-            Task.Run(() => AddOrder(order));
-        }
-
-        private double CalculateBoxHeight(ICollection<Item> orderItems)
+        private static double CalculateBoxHeight(ICollection<Item> orderItems)
         {
             return orderItems.Sum(item => item.Height);
         }
 
-        private double CalculateBoxWidth(ICollection<Item> orderItems)
+        private static double CalculateBoxWidth(ICollection<Item> orderItems)
         {
             return orderItems.Max(item => item.Width);
         }
 
-        private double CalculateBoxLength(ICollection<Item> orderItems)
+        private static double CalculateBoxLength(ICollection<Item> orderItems)
         {
             return orderItems.Max(item => item.Length);
         }
