@@ -1,3 +1,5 @@
+using Hangfire;
+using Hangfire.SqlServer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -8,6 +10,7 @@ using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using OPG.Interfaces;
 using OPG.Services;
+using System;
 using System.Linq;
 
 namespace OPG
@@ -16,13 +19,14 @@ namespace OPG
     {
         public Startup()
         {
-            var builder = new ConfigurationBuilder()
+            IConfigurationBuilder builder = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json");
+       
             Configuration = builder.Build();
         }
 
         public IConfiguration Configuration { get; }
-   
+
         public void ConfigureServices(IServiceCollection services) // This method gets called by the runtime. Use this method to add services to the container.
         {
             services.AddDbContext<OPGDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
@@ -37,9 +41,20 @@ namespace OPG
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "OPG", Version = "v1" });
                 c.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
             });
+
+            //var options = new SqlServerStorageOptions
+            //{
+            //    CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
+            //    SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
+            //    QueuePollInterval = TimeSpan.Zero,
+            //    UseRecommendedIsolationLevel = true,
+            //    DisableGlobalLocks = true // Migration to Schema 7 is required
+            //};
+
+            //GlobalConfiguration.Configuration.UseSqlServerStorage(Configuration.GetConnectionString("DefaultConnection"), options);
         }
 
-        
+
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env) // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         {
             if (env.IsDevelopment())

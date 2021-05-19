@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Hangfire;
+using Microsoft.EntityFrameworkCore;
 using OPG.Interfaces;
 using OPG.Models;
 using System;
@@ -22,10 +23,11 @@ namespace OPG.Services
 
         public void AddOrderTask(Order order)
         {
-            Task.Run(() => AddOrder(order));
+            //BackgroundJob.Enqueue(() => AddOrder(order));
+            Task.Run(async () => await AddOrder(order));
         }
-        private async Task<Order> AddOrder(Order order)
-        {
+        public async Task AddOrder(Order order)
+        {     
             for (int i = 0; i < 5; i++)
             {
                 Item item = GenerateItem();
@@ -37,7 +39,6 @@ namespace OPG.Services
 
             await OPGDbContext.Orders.AddAsync(order);
             await OPGDbContext.SaveChangesAsync();
-            return order;
         }
 
         private static double CalculateBoxHeight(ICollection<Item> orderItems)

@@ -3,6 +3,7 @@ using OPG.Interfaces;
 using OPG.Models;
 using OPG.Services;
 using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
 
 namespace OPG.Controllers
 {
@@ -24,10 +25,10 @@ namespace OPG.Controllers
         }
 
         [HttpPost("AddOrder")]
-        public void ExecuteAddOrder()
+        public async Task ExecuteAddOrder()
         {
             Order order = new();
-            _orderService.AddOrderTask(order);
+            await _orderService.AddOrder(order);
         }
     }
 }
