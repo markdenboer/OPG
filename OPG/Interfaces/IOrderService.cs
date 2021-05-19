@@ -6,6 +6,5 @@ namespace OPG.Interfaces
     {
         public void AddOrderTask(Order order);
         public Order GetOrder(int orderNr);
-        public string GetMinimalBoxSizeForOrder(int orderNr);
     }
 }

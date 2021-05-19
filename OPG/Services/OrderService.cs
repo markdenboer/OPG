@@ -20,21 +20,6 @@ namespace OPG.Services
             return OPGDbContext.Orders.Include(order => order.Items).FirstOrDefault(order => order.Id == orderNr);
         }
 
-        public string GetMinimalBoxSizeForOrder(int orderNr)
-        {
-            //Everything stacked on top of eachother
-            ICollection<Item> orderItems = GetOrder(orderNr).Items;
-            double totalHeight = orderItems.Sum(item => item.Height);
-            Item biggestLength = orderItems.OrderByDescending(item => item.Length).FirstOrDefault();
-            Item biggestWidth = orderItems.OrderByDescending(item => item.Width).FirstOrDefault();
-
-            string resultString = "Minimal values for box:";
-            resultString += "\nHeight: " + totalHeight.ToString() + "cm";
-            resultString += "\nLength: " + biggestLength.Length.ToString() + "cm";
-            resultString += "\nWidth: " + biggestWidth.Width.ToString() + "cm";
-            return resultString;
-        }
-
         public void AddOrderTask(Order order)
         {
             Task.Run(() => AddOrder(order));

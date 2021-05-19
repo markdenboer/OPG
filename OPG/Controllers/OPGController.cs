@@ -23,12 +23,6 @@ namespace OPG.Controllers
             return _orderService.GetOrder(orderNumber);
         }
 
-        [HttpGet("GetBoxsizeForOrder")]
-        public string ExecuteGetBoxsizeForOrder([Required] int orderNumber)
-        {
-            return _orderService.GetMinimalBoxSizeForOrder(orderNumber);
-        }
-
         [HttpPost("AddOrder")]
         public void ExecuteAddOrder()
         {
