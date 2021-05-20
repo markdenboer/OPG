@@ -21,7 +21,7 @@ namespace OPG
         {
             IConfigurationBuilder builder = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json");
-       
+
             Configuration = builder.Build();
         }
 
@@ -42,16 +42,21 @@ namespace OPG
                 c.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
             });
 
-            //var options = new SqlServerStorageOptions
-            //{
-            //    CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
-            //    SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
-            //    QueuePollInterval = TimeSpan.Zero,
-            //    UseRecommendedIsolationLevel = true,
-            //    DisableGlobalLocks = true // Migration to Schema 7 is required
-            //};
+            services.AddHangfire(configuration => configuration
+                    .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
+                    .UseSimpleAssemblyNameTypeSerializer()
+                    .UseRecommendedSerializerSettings()
+                    .UseSqlServerStorage(Configuration.GetConnectionString("DefaultConnection"), new SqlServerStorageOptions
+                    {
+                        CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
+                        SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
+                        QueuePollInterval = TimeSpan.Zero,
+                        UseRecommendedIsolationLevel = true,
+                        DisableGlobalLocks = true
+                    }));
 
-            //GlobalConfiguration.Configuration.UseSqlServerStorage(Configuration.GetConnectionString("DefaultConnection"), options);
+            services.AddHangfireServer();
+            services.AddControllers().AddNewtonsoftJson();
         }
 
 
@@ -64,16 +69,15 @@ namespace OPG
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "OPG v1"));
             }
 
+            app.UseHangfireDashboard();
             app.UseHttpsRedirection();
-
             app.UseRouting();
-
             app.UseAuthorization();
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
+
         }
     }
 }

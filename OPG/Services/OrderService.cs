@@ -1,5 +1,6 @@
 ﻿using Hangfire;
 using Microsoft.EntityFrameworkCore;
+using OPG.DTO;
 using OPG.Interfaces;
 using OPG.Models;
 using System;
@@ -21,23 +22,21 @@ namespace OPG.Services
             return OPGDbContext.Orders.Include(order => order.Items).FirstOrDefault(order => order.Id == orderNr);
         }
 
-        public void AddOrderTask(Order order)
+        public void AddOrderTask(OrderDTO order)
         {
-            //BackgroundJob.Enqueue(() => AddOrder(order));
-            Task.Run(async () => await AddOrder(order));
+            BackgroundJob.Enqueue(() => AddOrderTaskWithJSON(order));
         }
-        public async Task AddOrder(Order order)
-        {     
-            for (int i = 0; i < 5; i++)
-            {
-                Item item = GenerateItem();
-                order.Items.Add(item);
-            }
-            order.BoxHeight = CalculateBoxHeight(order.Items);
-            order.BoxWidth = CalculateBoxWidth(order.Items);
-            order.BoxLength = CalculateBoxLength(order.Items);
 
-            await OPGDbContext.Orders.AddAsync(order);
+        public async Task AddOrderTaskWithJSON(OrderDTO order)
+        {
+            Order newOrder = new();
+            newOrder.OrderNumber = order.OrderNumber;
+            newOrder.Items = order.Items.Select(itemDTO => new Item(itemDTO.Name, itemDTO.Height, itemDTO.Width, itemDTO.Length, itemDTO.Amount)).ToList();    
+            newOrder.BoxHeight = CalculateBoxHeight(newOrder.Items);
+            newOrder.BoxWidth = CalculateBoxWidth(newOrder.Items);
+            newOrder.BoxLength = CalculateBoxLength(newOrder.Items);
+
+            await OPGDbContext.Orders.AddAsync(newOrder);
             await OPGDbContext.SaveChangesAsync();
         }
 
@@ -54,20 +53,6 @@ namespace OPG.Services
         private static double CalculateBoxLength(ICollection<Item> orderItems)
         {
             return orderItems.Max(item => item.Length);
-        }
-
-        private Item GenerateItem()
-        {
-            Random rng = new();
-            Item item = new()
-            {
-                Name = "Item" + rng.Next(1, 777).ToString(),
-                Height = rng.Next(1, 20),
-                Width = rng.Next(1, 20),
-                Length = rng.Next(1, 20),
-                Amount = 1
-            };
-            return item;
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using OPG.DTO;
 using OPG.Interfaces;
 using OPG.Models;
 using OPG.Services;
@@ -24,11 +25,10 @@ namespace OPG.Controllers
             return _orderService.GetOrder(orderNumber);
         }
 
-        [HttpPost("AddOrder")]
-        public async Task ExecuteAddOrder()
+        [HttpPost("AddOrderFromJson")]
+        public async Task ExecuteAddOrder([FromBody] OrderDTO orderDTO)
         {
-            Order order = new();
-            await _orderService.AddOrder(order);
+            _orderService.AddOrderTask(orderDTO);
         }
     }
 }

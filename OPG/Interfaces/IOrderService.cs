@@ -1,12 +1,12 @@
-﻿using OPG.Models;
+﻿using OPG.DTO;
+using OPG.Models;
 using System.Threading.Tasks;
 
 namespace OPG.Interfaces
 {
     public interface IOrderService
     {
-        public void AddOrderTask(Order order);
-        public Task AddOrder(Order order);
+        public void AddOrderTask(OrderDTO order);
         public Order GetOrder(int orderNr);
     }
 }
