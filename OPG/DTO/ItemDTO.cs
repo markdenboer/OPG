@@ -1,10 +1,4 @@
-﻿using OPG.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace OPG.DTO
+﻿namespace OPG.DTO
 {
     public class ItemDTO
     {

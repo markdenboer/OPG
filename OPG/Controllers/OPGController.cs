@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Hangfire;
+using Microsoft.AspNetCore.Mvc;
 using OPG.DTO;
 using OPG.Interfaces;
 using OPG.Models;
@@ -12,7 +13,7 @@ namespace OPG.Controllers
     [Route("[controller]")]
     public class OPGController : ControllerBase
     {
-        private IOrderService _orderService;
+        private readonly IOrderService _orderService;
 
         public OPGController(IOrderService orderService)
         {
@@ -26,9 +27,9 @@ namespace OPG.Controllers
         }
 
         [HttpPost("AddOrderFromJson")]
-        public async Task ExecuteAddOrder([FromBody] OrderDTO orderDTO)
+        public void ExecuteAddOrder([FromBody] OrderDTO orderDTO)
         {
-            _orderService.AddOrderTask(orderDTO);
+            BackgroundJob.Enqueue(() => _orderService.AddOrderTaskWithJSON(orderDTO));
         }
     }
 }
