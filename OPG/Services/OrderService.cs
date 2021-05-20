@@ -15,9 +15,9 @@ namespace OPG.Services
         {
             OPGDbContext = dbContext;
         }
-        public async Task<Order> GetOrder(int orderId)
+        public async Task<Order> GetOrder(string orderNumber)
         {
-            return await OPGDbContext.Orders.Include(order => order.Items).FirstOrDefaultAsync(order => order.Id == orderId);
+            return await OPGDbContext.Orders.Include(order => order.Items).FirstOrDefaultAsync(order => order.OrderNumber == orderNumber);
         }
 
         public async Task AddOrderTaskWithJSON(OrderDTO order)

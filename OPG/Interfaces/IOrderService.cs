@@ -7,6 +7,6 @@ namespace OPG.Interfaces
     public interface IOrderService
     {
         public Task AddOrderTaskWithJSON(OrderDTO order);
-        public Task<Order> GetOrder(int orderNr);
+        public Task<Order> GetOrder(string orderNumber);
     }
 }

@@ -21,7 +21,7 @@ namespace OPG.Controllers
         }
 
         [HttpGet("GetOrder")]
-        public async Task<Order> ExecuteGetOrder([Required] int orderNumber)
+        public async Task<Order> ExecuteGetOrder([Required] string orderNumber)
         {
             return await _orderService.GetOrder(orderNumber);
         }
