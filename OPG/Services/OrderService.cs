@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Hangfire;
+using Microsoft.EntityFrameworkCore;
 using OPG.DTO;
 using OPG.Interfaces;
 using OPG.Models;
@@ -14,9 +15,9 @@ namespace OPG.Services
         {
             OPGDbContext = dbContext;
         }
-        public Order GetOrder(int orderNr)
+        public async Task<Order> GetOrder(int orderId)
         {
-            return OPGDbContext.Orders.Include(order => order.Items).FirstOrDefault(order => order.Id == orderNr);
+            return await OPGDbContext.Orders.Include(order => order.Items).FirstOrDefaultAsync(order => order.Id == orderId);
         }
 
         public async Task AddOrderTaskWithJSON(OrderDTO order)

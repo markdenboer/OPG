@@ -21,9 +21,9 @@ namespace OPG.Controllers
         }
 
         [HttpGet("GetOrder")]
-        public Order ExecuteGetOrder([Required] int orderNumber)
+        public async Task<Order> ExecuteGetOrder([Required] int orderNumber)
         {
-            return _orderService.GetOrder(orderNumber);
+            return await _orderService.GetOrder(orderNumber);
         }
 
         [HttpPost("AddOrderFromJson")]
